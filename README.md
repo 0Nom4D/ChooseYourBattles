@@ -48,16 +48,24 @@ class Solver:
         self._wordList = []
         self._letterList = []
 
+    @property
+    def equation(self) -> str:
+        return self._equation
+
+    @property
+    def wordList(self):
+        return self._wordList
+
+    @property
+    def letterList(self):
+        return self._letterList
+
     def getLettersFromEquation(self) -> bool:
         self._wordList = self._equation.split()
 
         for word in self._wordList:
             if not word.isalpha():
-                ## Remove the operands or elements not having only letters.
                 self._wordList.remove(word)
-
-        ## We're creating a set in order to have only unique values.
-        ## Then we're converting the set into a list in order to have access to indices.
         self._letterList = list(set(''.join(self._wordList)))
         if len(self._letterList) > 10:
             return False
@@ -66,7 +74,6 @@ class Solver:
     def transformValue(self, values: List[int]) -> int:
         """
         Computes the list of integer for each value of a word, into an integer, using power of ten.
-
         :param values: List of value for each word
         :return: Computed value for the word
         """
@@ -84,8 +91,19 @@ class Solver:
         def getAllPossibleAssociation():
             return list(permutations([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], len(self._letterList)))
 
+        def isResultLongerThanOperand():
+            """
+            Checks if any word is longer than the crypt-arithmetic puzzle result
+            :return: True if the result is longer than every operand, False otherwise
+            """
+            operationResult = []
+
+            for operand in self._wordList[:-1]:
+                operationResult.append(len(self._wordList[-1]) > len(operand))
+            return all(operationResult)
+
         associationList = getAllPossibleAssociation()
-        if len(self._wordList[2]) > len(self._wordList[0]) and len(self._wordList[2]) > len(self._wordList[0]):
+        if isResultLongerThanOperand():
             resultBiggerLength = True
 
         for association in associationList:
@@ -93,7 +111,7 @@ class Solver:
             ## Checks if the result is bigger than the both operands. If true, we're checking
             ## if the element in the 'x' position of the permutation is not 1, we continue. Because that
             ## permutation will not be the right one.
-            if resultBiggerLength and association[self._letterList.index(self._wordList[2][0])] != 1:
+            if resultBiggerLength and association[self._letterList.index(self._wordList[-1][0])] != 1:
                 continue
 
             ## Creates all values for each letter of each word. When created, we loop over those
