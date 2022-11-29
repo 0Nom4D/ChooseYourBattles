@@ -55,8 +55,15 @@ class Solver:
         def getAllPossibleAssociation():
             return list(permutations([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], len(self._letterList)))
 
+        def isResultLongerThanOperand():
+            operationResult = []
+
+            for operand in self._wordList[:-1]:
+                operationResult.append(len(self._wordList[-1]) > len(operand))
+            return all(operationResult)
+
         associationList = getAllPossibleAssociation()
-        if len(self._wordList[2]) > len(self._wordList[0]) and len(self._wordList[2]) > len(self._wordList[0]):
+        if isResultLongerThanOperand():
             resultBiggerLength = True
 
         for association in associationList:
@@ -64,7 +71,7 @@ class Solver:
             ## Checks if the result is bigger than the both operands. If true, we're checking
             ## if the element in the 'x' position of the permutation is not 1, we continue. Because that
             ## permutation will not be the right one.
-            if resultBiggerLength and association[self._letterList.index(self._wordList[2][0])] != 1:
+            if resultBiggerLength and association[self._letterList.index(self._wordList[-1][0])] != 1:
                 continue
 
             ## Creates all values for each letter of each word. When created, we loop over those
